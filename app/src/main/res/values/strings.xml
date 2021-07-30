@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">FriendlyReminder</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="edit_button_text">Edit</string>
+    <string name="delete_button_text">Delete</string>
+    <string name="reminder_for_text">Reminder for:</string>
+    <string name="default_reminder_name">Take a nap</string>
+    <string name="text_miss_reminder">Text this person on missing reminder:</string>
+    <string name="default_contact_name">Mom</string>
+</resources>
