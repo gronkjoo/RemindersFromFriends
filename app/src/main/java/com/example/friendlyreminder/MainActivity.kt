@@ -3,6 +3,7 @@ package com.example.friendlyreminder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
 import android.os.Bundle
+import android.text.BoringLayout
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -44,8 +45,7 @@ class MainActivity : AppCompatActivity() {
         //Initialize the recycler view
         remindersRecyclerView = findViewById(R.id.reminder_list)
 
-        //create the list of reminders
-        populateReminders()
+        renderListOfReminders(false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,15 +78,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun populateReminders(){
+    fun populateReminders(showCheckBox:Boolean):ArrayList<ReminderCardModel>{
         var listOfReminders = arrayListOf<ReminderCardModel>()
 
-        listOfReminders.add(ReminderCardModel("Take Medications","Wife - 123 456 7890"))
-        listOfReminders.add(ReminderCardModel("Wake up in the morning","Mummy - 321 789 4560"))
-        listOfReminders.add(ReminderCardModel("Go to school","kids - 789 465 1230"))
-        listOfReminders.add(ReminderCardModel("Do exercise","Doctor - 159 753 7520"))
-        listOfReminders.add(ReminderCardModel("Do work","Manager - 456 789 1230"))
-        listOfReminders.add(ReminderCardModel("Take Rest","Friend - 789 123 4560"))
+        listOfReminders.add(ReminderCardModel("Take Medications","Wife - 123 456 7890","1",showCheckBox))
+        listOfReminders.add(ReminderCardModel("Wake up in the morning","Mummy - 321 789 4560","2",showCheckBox))
+        listOfReminders.add(ReminderCardModel("Go to school","kids - 789 465 1230","3",showCheckBox))
+        listOfReminders.add(ReminderCardModel("Do exercise","Doctor - 159 753 7520","4",showCheckBox))
+        listOfReminders.add(ReminderCardModel("Do work","Manager - 456 789 1230","5",showCheckBox))
+        listOfReminders.add(ReminderCardModel("Take Rest","Friend - 789 123 4560","6",showCheckBox))
+
+        return listOfReminders
+    }
+
+    fun renderListOfReminders(showCheckBox: Boolean):Unit{
+        //create the list of reminders
+        var listOfReminders:ArrayList<ReminderCardModel> = populateReminders(showCheckBox)
 
         //create the adapter
         val reminderAdapter = ReminderRecyclerAdapter(this,listOfReminders)

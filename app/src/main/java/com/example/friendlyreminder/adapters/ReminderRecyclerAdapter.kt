@@ -4,10 +4,16 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.friendlyreminder.MainActivity
 import com.example.friendlyreminder.R
 import com.example.friendlyreminder.model.ReminderCardModel
+import com.example.friendlyreminder.observers.ReminderRecyclerObserver
+import com.google.android.material.textview.MaterialTextView
 
 class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.ViewHolder> {
 
@@ -17,6 +23,10 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
     constructor(context: Context?, reminderList: ArrayList<ReminderCardModel>?) : super() {
         this.context = context
         this.reminderList = reminderList
+    }
+
+    init {
+        this.registerAdapterDataObserver(ReminderRecyclerObserver())
     }
 
 
@@ -74,6 +84,14 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
         var singleReminder:ReminderCardModel = reminderList!!.get(position)
         holder.reminderNameTextField!!.setText(singleReminder.reminderName)
         holder.reminderContactTextField!!.setText(singleReminder.reminderContact)
+        holder.reminderId!!.setText(singleReminder.reminderId)
+        if(singleReminder.showCheckbox) {
+            holder.checkboxLayout!!.visibility = LinearLayout.VISIBLE
+        }
+        else{
+            holder.checkboxLayout!!.visibility = LinearLayout.GONE
+        }
+        holder.actionCheckbox!!.isChecked = singleReminder.showCheckbox
     }
 
     /**
@@ -85,25 +103,42 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
         return reminderList!!.size
     }
 
-    class ViewHolder : RecyclerView.ViewHolder,View.OnClickListener,View.OnLongClickListener {
+    inner class ViewHolder : RecyclerView.ViewHolder,View.OnClickListener,View.OnLongClickListener {
         var reminderNameTextField:TextView? = null
         var reminderContactTextField:TextView? = null
+        var reminderId:TextView? = null
+        var actionCheckbox: CheckBox? = null
+        var checkboxLayout: LinearLayout? = null
 
         init{
-
+            itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
         }
 
         constructor(itemView: View):super(itemView){
             reminderNameTextField = itemView.findViewById(R.id.reminder_name)
             reminderContactTextField = itemView.findViewById(R.id.contact_name)
+            reminderId = itemView.findViewById(R.id.reminderId)
+            checkboxLayout = itemView.findViewById(R.id.checkbox_layout)
+            actionCheckbox = itemView.findViewById(R.id.action_checkbox)
         }
 
-        override fun onClick(p0: View?) {
-            TODO("Not yet implemented")
+        override fun onClick(view: View?) {
+            Toast.makeText(view?.context,"click",Toast.LENGTH_SHORT).show()
         }
 
-        override fun onLongClick(p0: View?): Boolean {
-            TODO("Not yet implemented")
+        override fun onLongClick(view: View?): Boolean {
+            Toast.makeText(view?.context,"LOOOONNNG click",Toast.LENGTH_SHORT).show()
+
+            var selectedReminderId: String = (((view as ViewGroup).getChildAt(1) as ViewGroup)
+                .getChildAt(1) as MaterialTextView).text.toString()
+
+            var mainActivity = context as MainActivity
+            mainActivity.renderListOfReminders(true)
+
+            this@ReminderRecyclerAdapter.notifyDataSetChanged()
+
+            return true
         }
     }
 }

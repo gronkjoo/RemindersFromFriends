@@ -15,4 +15,5 @@
     <string name="default_reminder_name">Take a nap</string>
     <string name="text_miss_reminder">Text this person on missing reminder:</string>
     <string name="default_contact_name">Mom</string>
+    <string name="default_string">Default</string>
 </resources>
