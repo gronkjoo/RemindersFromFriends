@@ -25,6 +25,7 @@
             android:id="@+id/action_checkbox"
             android:gravity="center_vertical|center_horizontal"
             android:buttonTint="@android:color/holo_green_light"
+            android:transitionName=""
             style="@style/rounded_checkbox"/>
 
     </LinearLayout>

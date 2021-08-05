@@ -4,10 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.friendlyreminder.MainActivity
 import com.example.friendlyreminder.R
@@ -91,7 +88,10 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
         else{
             holder.checkboxLayout!!.visibility = LinearLayout.GONE
         }
-        holder.actionCheckbox!!.isChecked = singleReminder.showCheckbox
+
+        holder.actionCheckbox!!.id = Integer(singleReminder.reminderId).toInt()
+        holder.actionCheckbox!!.isChecked = singleReminder.checkCheckbox
+
     }
 
     /**
@@ -101,6 +101,10 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
      */
     override fun getItemCount(): Int {
         return reminderList!!.size
+    }
+
+    fun getItem(position:Int):ReminderCardModel{
+        return reminderList!!.get(position)
     }
 
     inner class ViewHolder : RecyclerView.ViewHolder,View.OnClickListener,View.OnLongClickListener {
@@ -121,20 +125,29 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
             reminderId = itemView.findViewById(R.id.reminderId)
             checkboxLayout = itemView.findViewById(R.id.checkbox_layout)
             actionCheckbox = itemView.findViewById(R.id.action_checkbox)
+
+            actionCheckbox?.setOnCheckedChangeListener { checkBox, isChecked ->
+                if(isChecked){
+                    Toast.makeText(itemView?.context,checkBox!!.id.toString(),Toast.LENGTH_SHORT).show()
+                }
+                else{
+
+                }
+            }
         }
 
         override fun onClick(view: View?) {
-            Toast.makeText(view?.context,"click",Toast.LENGTH_SHORT).show()
+            //Toast.makeText(view?.context,"click",Toast.LENGTH_SHORT).show()
         }
 
         override fun onLongClick(view: View?): Boolean {
-            Toast.makeText(view?.context,"LOOOONNNG click",Toast.LENGTH_SHORT).show()
+            //Toast.makeText(view?.context,"LOOOONNNG click",Toast.LENGTH_SHORT).show()
 
             var selectedReminderId: String = (((view as ViewGroup).getChildAt(1) as ViewGroup)
-                .getChildAt(1) as MaterialTextView).text.toString()
+                .getChildAt(0) as MaterialTextView).text.toString()
 
             var mainActivity = context as MainActivity
-            mainActivity.renderListOfReminders(true)
+            mainActivity.renderListOfReminders(true,selectedReminderId)
 
             this@ReminderRecyclerAdapter.notifyDataSetChanged()
 
