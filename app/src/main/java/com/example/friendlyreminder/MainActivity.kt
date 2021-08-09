@@ -7,6 +7,8 @@ import android.text.BoringLayout
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -15,15 +17,26 @@ import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.friendlyreminder.adapters.ReminderRecyclerAdapter
+import com.example.friendlyreminder.constants.Constants
 import com.example.friendlyreminder.databinding.ActivityMainBinding
 import com.example.friendlyreminder.model.ReminderCardModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
     private var appBarConfiguration: AppBarConfiguration? = null
     private var binding: ActivityMainBinding? = null
     private var remindersRecyclerView:RecyclerView? = null
+    private var outAnimation:Animation? = null
+    private var inAnimation:Animation? = null
+    private var fab:FloatingActionButton? = null
 
+    //This will indicate the current state of the fab button. The fab button is used to either add a new reminder or cancel selection mode
+    private var fabButtonMode:Int = Constants.FabButtonState.ADD_REMINDER_MODE.value
+
+    /**
+     * This is the main function that gets called when the main page is called.
+     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(
@@ -34,7 +47,9 @@ class MainActivity : AppCompatActivity() {
         /*val navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration!!)*/
-        binding!!.fab.setOnClickListener { view ->
+
+        fab = binding!!.fab
+        fab!!.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
@@ -47,14 +62,44 @@ class MainActivity : AppCompatActivity() {
 
         renderListOfReminders(false,"0")
 
+        //iniate the animators
+        outAnimation = AnimationUtils.loadAnimation(this,R.anim.anim_fade_out)
+        outAnimation!!.setAnimationListener(object:Animation.AnimationListener{
+            override fun onAnimationStart(p0: Animation?) {
+
+            }
+
+            override fun onAnimationEnd(p0: Animation?) {
+                if(fabButtonMode==Constants.FabButtonState.ADD_REMINDER_MODE.value)
+                    fab!!.setImageResource(android.R.drawable.ic_delete)
+                else if(fabButtonMode==Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value)
+                    fab!!.setImageResource(android.R.drawable.ic_input_add)
+
+                fab!!.startAnimation(inAnimation)
+            }
+
+            override fun onAnimationRepeat(p0: Animation?) {
+
+            }
+
+        })
+        inAnimation = AnimationUtils.loadAnimation(this,R.anim.anim_fade_in)
+
     }
 
+    /**
+     * Returning false to hide the three dots for the menu.
+     * */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         //menuInflater.inflate(R.menu.menu_main, menu)
         return false
     }
 
+    /**
+     * Function to handle clicks on the menu.
+     * Menu is hidden via false return on the onCreateOptionsMenu function.
+     * */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -71,6 +116,10 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp())
     }*/
 
+
+    /**
+     * Function to handle clicks for the edit reminder Button.
+     * */
     val listener = View.OnClickListener { view ->
         when(view.id){
             R.id.edit_reminder_button ->{
@@ -79,6 +128,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    /**
+     * This will populate the reminders in an arrayList. This should come from the DB.
+     * */
     fun populateReminders(showCheckBox:Boolean,selectedReminderId: String):ArrayList<ReminderCardModel>{
         var listOfReminders = arrayListOf<ReminderCardModel>()
         var generatedReminderId: Int = 0
@@ -106,6 +159,11 @@ class MainActivity : AppCompatActivity() {
         return listOfReminders
     }
 
+    /**
+     * This will take render the populated list of reminders on screen.
+     * If required all checkboxes are shown.
+     * If required a particular checkbox is checked.
+     * */
     fun renderListOfReminders(showCheckBox: Boolean,selectedReminderId: String):Unit{
         //create the list of reminders
         var listOfReminders:ArrayList<ReminderCardModel> = populateReminders(showCheckBox,selectedReminderId)
@@ -119,5 +177,22 @@ class MainActivity : AppCompatActivity() {
         //create the recycler view
         remindersRecyclerView?.layoutManager = linearLayoutManager
         remindersRecyclerView?.adapter = reminderAdapter
+    }
+
+    /**
+     * This will change the mode of the fab button.
+     * In Add mode fab button will take the user to add activity
+     * In Edit mode fab button will cancel the user selection of reminders
+     * */
+    fun changeFabButton(requiredMode:Int):Boolean{
+        if(requiredMode==Constants.FabButtonState.ADD_REMINDER_MODE.value && fabButtonMode!=requiredMode){
+            return true
+        }
+        else if(requiredMode==Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value){
+            fab!!.startAnimation(outAnimation)
+            return true
+        }
+        else
+            return false
     }
 }

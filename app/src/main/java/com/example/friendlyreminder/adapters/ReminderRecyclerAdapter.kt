@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.friendlyreminder.MainActivity
 import com.example.friendlyreminder.R
+import com.example.friendlyreminder.constants.Constants
 import com.example.friendlyreminder.model.ReminderCardModel
 import com.example.friendlyreminder.observers.ReminderRecyclerObserver
 import com.google.android.material.textview.MaterialTextView
@@ -148,6 +149,7 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
 
             var mainActivity = context as MainActivity
             mainActivity.renderListOfReminders(true,selectedReminderId)
+            mainActivity.changeFabButton(Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value)
 
             this@ReminderRecyclerAdapter.notifyDataSetChanged()
 
