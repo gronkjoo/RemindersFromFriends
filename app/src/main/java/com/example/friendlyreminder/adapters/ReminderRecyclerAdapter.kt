@@ -129,7 +129,7 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
 
             actionCheckbox?.setOnCheckedChangeListener { checkBox, isChecked ->
                 if(isChecked){
-                    Toast.makeText(itemView?.context,checkBox!!.id.toString(),Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(itemView?.context,checkBox!!.id.toString(),Toast.LENGTH_SHORT).show()
                 }
                 else{
 
@@ -148,10 +148,12 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
                 .getChildAt(0) as MaterialTextView).text.toString()
 
             var mainActivity = context as MainActivity
+            //repopulate the list of reminders again with the select buttons shown
             mainActivity.renderListOfReminders(true,selectedReminderId)
+            //change the fab button to cancel selection mode
             mainActivity.changeFabButton(Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value)
 
-            this@ReminderRecyclerAdapter.notifyDataSetChanged()
+            //this@ReminderRecyclerAdapter.notifyDataSetChanged()
 
             return true
         }

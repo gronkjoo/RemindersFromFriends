@@ -50,8 +50,10 @@ class MainActivity : AppCompatActivity() {
 
         fab = binding!!.fab
         fab!!.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()*/
+            renderListOfReminders(false,"-1")
+            changeFabButton(Constants.FabButtonState.ADD_REMINDER_MODE.value)
         }
 
         var editButton:Button = findViewById(R.id.edit_reminder_button)
@@ -65,9 +67,7 @@ class MainActivity : AppCompatActivity() {
         //iniate the animators
         outAnimation = AnimationUtils.loadAnimation(this,R.anim.anim_fade_out)
         outAnimation!!.setAnimationListener(object:Animation.AnimationListener{
-            override fun onAnimationStart(p0: Animation?) {
-
-            }
+            override fun onAnimationStart(p0: Animation?) {            }
 
             override fun onAnimationEnd(p0: Animation?) {
                 if(fabButtonMode==Constants.FabButtonState.ADD_REMINDER_MODE.value)
@@ -76,14 +76,26 @@ class MainActivity : AppCompatActivity() {
                     fab!!.setImageResource(android.R.drawable.ic_input_add)
 
                 fab!!.startAnimation(inAnimation)
-            }
-
-            override fun onAnimationRepeat(p0: Animation?) {
 
             }
+
+            override fun onAnimationRepeat(p0: Animation?) {            }
 
         })
         inAnimation = AnimationUtils.loadAnimation(this,R.anim.anim_fade_in)
+        inAnimation!!.setAnimationListener(object:Animation.AnimationListener{
+            override fun onAnimationStart(p0: Animation?) {            }
+
+            override fun onAnimationEnd(p0: Animation?) {
+                if(fabButtonMode==Constants.FabButtonState.ADD_REMINDER_MODE.value)
+                    fabButtonMode=Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value
+                else if(fabButtonMode==Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value)
+                    fabButtonMode=Constants.FabButtonState.ADD_REMINDER_MODE.value
+            }
+
+            override fun onAnimationRepeat(p0: Animation?) {            }
+
+        })
 
     }
 
@@ -177,6 +189,7 @@ class MainActivity : AppCompatActivity() {
         //create the recycler view
         remindersRecyclerView?.layoutManager = linearLayoutManager
         remindersRecyclerView?.adapter = reminderAdapter
+        reminderAdapter.notifyDataSetChanged()
     }
 
     /**
@@ -185,10 +198,8 @@ class MainActivity : AppCompatActivity() {
      * In Edit mode fab button will cancel the user selection of reminders
      * */
     fun changeFabButton(requiredMode:Int):Boolean{
-        if(requiredMode==Constants.FabButtonState.ADD_REMINDER_MODE.value && fabButtonMode!=requiredMode){
-            return true
-        }
-        else if(requiredMode==Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value){
+        if(requiredMode==Constants.FabButtonState.ADD_REMINDER_MODE.value ||
+            requiredMode==Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value){
             fab!!.startAnimation(outAnimation)
             return true
         }
