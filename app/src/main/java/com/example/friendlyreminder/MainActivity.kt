@@ -22,6 +22,7 @@ import com.example.friendlyreminder.databinding.ActivityMainBinding
 import com.example.friendlyreminder.model.ReminderCardModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     private var appBarConfiguration: AppBarConfiguration? = null
@@ -30,6 +31,9 @@ class MainActivity : AppCompatActivity() {
     private var outAnimation:Animation? = null
     private var inAnimation:Animation? = null
     private var fab:FloatingActionButton? = null
+    private var selectedReminders:ArrayList<String> = ArrayList<String>()
+    private var editButton:Button? = null
+    private var deleteButton:Button? = null
 
     //This will indicate the current state of the fab button. The fab button is used to either add a new reminder or cancel selection mode
     private var fabButtonMode:Int = Constants.FabButtonState.ADD_REMINDER_MODE.value
@@ -52,12 +56,19 @@ class MainActivity : AppCompatActivity() {
         fab!!.setOnClickListener { view ->
             /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()*/
-            renderListOfReminders(false,"-1")
-            changeFabButton(Constants.FabButtonState.ADD_REMINDER_MODE.value)
+            if(fabButtonMode == Constants.FabButtonState.EXIT_REMINDER_SELECT_MODE.value) {
+                renderListOfReminders(false, "-1")
+                changeFabButton(Constants.FabButtonState.ADD_REMINDER_MODE.value)
+            }
+            clearSelectedReminders()
+            enableOrDisableEditButton()
+            enableOrDisableDeleteButton()
         }
 
-        var editButton:Button = findViewById(R.id.edit_reminder_button)
-        editButton.setOnClickListener(listener)
+        editButton = findViewById(R.id.edit_reminder_button)
+        editButton!!.setOnClickListener(listener)
+        deleteButton = findViewById(R.id.delete_reminder_button)
+        deleteButton!!.setOnClickListener(listener)
 
         //Initialize the recycler view
         remindersRecyclerView = findViewById(R.id.reminder_list)
@@ -206,4 +217,62 @@ class MainActivity : AppCompatActivity() {
         else
             return false
     }
+
+
+    /**
+     * This function will add the reminder to the list of reminders selected
+    * */
+    fun addToCheckedReminderList(reminderId:String):Boolean{
+        selectedReminders!!.add(reminderId)
+        enableOrDisableEditButton()
+        enableOrDisableDeleteButton()
+        return true
+    }
+
+    /**
+     * This function will remove reminders from the list of reminders selected
+     */
+    fun removeFromCheckedRemindersList(reminderId:String):Boolean{
+        try {
+            selectedReminders!!.remove(reminderId)
+            return true
+        }
+        catch (e:Exception){
+            println("Exception in removing reminder: "+e.message)
+            return false
+        }
+        finally {
+            enableOrDisableEditButton()
+            enableOrDisableDeleteButton()
+        }
+    }
+
+    /**
+     * This function takes care of enabling/disabling the edit button
+     * */
+    fun enableOrDisableEditButton(){
+        if(selectedReminders!!.size == 1)
+            editButton!!.isEnabled = true
+        else
+            editButton!!.isEnabled = false
+    }
+
+    /**
+     * This function takes care of enabling/disabling the delete button
+     * */
+    fun enableOrDisableDeleteButton(){
+        if(selectedReminders!!.size >=1)
+            deleteButton!!.isEnabled = true
+        else
+            deleteButton!!.isEnabled = false
+
+    }
+
+    /**
+     * This function will clear the list of reminders selected
+     * */
+    fun clearSelectedReminders(){
+        selectedReminders.clear()
+    }
+
 }

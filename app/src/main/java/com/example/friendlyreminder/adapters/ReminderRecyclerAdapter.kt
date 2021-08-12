@@ -130,9 +130,10 @@ class ReminderRecyclerAdapter: RecyclerView.Adapter<ReminderRecyclerAdapter.View
             actionCheckbox?.setOnCheckedChangeListener { checkBox, isChecked ->
                 if(isChecked){
                     //Toast.makeText(itemView?.context,checkBox!!.id.toString(),Toast.LENGTH_SHORT).show()
+                    (this@ReminderRecyclerAdapter.context as MainActivity).addToCheckedReminderList(checkBox!!.id.toString())
                 }
                 else{
-
+                    (this@ReminderRecyclerAdapter.context as MainActivity).removeFromCheckedRemindersList(checkBox!!.id.toString())
                 }
             }
         }
